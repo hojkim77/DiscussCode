@@ -14,32 +14,47 @@ Fastify 5 REST API server. Runs on port **4000** by default.
 
 ## 빠른 시작
 
-### 1. 환경변수 설정
-
-```bash
-cp apps/api/.env.example apps/api/.env
-```
-
-필수 값 (`apps/api/.env`):
-
-```env
-SUPABASE_URL=https://<project>.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
-REDIS_URL=redis://localhost:6379
-ANTHROPIC_API_KEY=sk-ant-...
-GITHUB_TOKEN=ghp_...           # 선택 — GitHub API rate limit 상향
-PORT=4000
-NODE_ENV=development
-WEB_URL=http://localhost:3000  # CORS origin
-```
-
-> `SUPABASE_SERVICE_ROLE_KEY`는 서버 전용. 클라이언트에 절대 노출 금지.
-
-### 2. 의존성 설치
+### 1. 의존성 설치
 
 ```bash
 # 레포 루트에서
 pnpm install
+```
+
+### 2. 환경변수 설정
+
+```bash
+# 레포 루트에서
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+```
+
+**`apps/api/.env`** 필수 값:
+
+```env
+SUPABASE_URL=https://<project>.supabase.co
+SUPABASE_ANON_KEY=<anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key>   # 서버 전용, 클라이언트 노출 금지
+REDIS_URL=redis://localhost:6379
+PORT=4000
+NODE_ENV=development
+WEB_URL=http://localhost:3000
+```
+
+선택 값:
+
+```env
+ANTHROPIC_API_KEY=sk-ant-...   # LLM 요약 기능 활성화 시 필요
+GITHUB_TOKEN=ghp_...            # GitHub API rate limit 상향
+```
+
+**`apps/web/.env`** 필수 값:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
+NEXT_PUBLIC_API_URL=/api
+API_URL=http://localhost:4000
 ```
 
 ### 3. DB 마이그레이션 적용
@@ -47,8 +62,8 @@ pnpm install
 Supabase 대시보드 또는 CLI에서 아래 SQL을 순서대로 실행:
 
 ```
-packages/db/migrations/001_initial.sql   # 전체 스키마 + RLS + 트리거
-packages/db/migrations/002_watchlist_seed.sql  # WatchList 40개 레포 시드
+packages/db/migrations/001_initial.sql        # 전체 스키마 + RLS + 트리거
+packages/db/migrations/002_watchlist_seed.sql # WatchList 40개 레포 시드
 ```
 
 ### 4. 로컬 Redis 실행
@@ -59,10 +74,13 @@ redis-server
 docker run -p 6379:6379 redis:alpine
 ```
 
-### 5. API 서버 실행
+### 5. 개발 서버 실행
 
 ```bash
-# 개발 (tsx watch — 핫 리로드)
+# 전체 스택 (Next.js :3000 + Fastify :4000 동시 실행) — 루트에서
+pnpm dev
+
+# API만 단독 실행
 pnpm --filter @discusscode/api dev
 
 # 빌드 후 실행

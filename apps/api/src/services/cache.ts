@@ -3,8 +3,12 @@ import { Redis as IORedis } from "ioredis";
 // General-purpose cache client (non-BullMQ — no maxRetriesPerRequest: null)
 export const cache = new IORedis(
   process.env.REDIS_URL ?? "redis://localhost:6379",
-  { lazyConnect: true }
+  {
+    lazyConnect: true,
+    retryStrategy: (times) => Math.min(times * 500, 5000),
+  }
 );
+cache.on("error", (err) => console.error("[redis:cache]", err.message));
 
 export async function withCache<T>(
   key: string,
