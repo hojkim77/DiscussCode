@@ -1,6 +1,6 @@
 {
   "build": {
-    "cmd": "pnpm install --frozen-lockfile && pnpm --filter @discusscode/api build"
+    "cmd": "pnpm install --frozen-lockfile && pnpm turbo run build"
   },
   "start": {
     "cmd": "node apps/api/dist/server.js"
