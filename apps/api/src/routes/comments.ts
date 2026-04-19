@@ -2,6 +2,7 @@ import type { FastifyPluginAsync } from "fastify";
 import { db } from "@discusscode/db";
 import { generateNotifications } from "./notifications.js";
 import { adjustVotes } from "./talks.js";
+import { toCamel } from "../utils/camel.js";
 
 export const commentsRoutes: FastifyPluginAsync = async (app) => {
   // ── GET /api/talks/:talkId/comments ────────────────────────────────────────
@@ -32,7 +33,7 @@ export const commentsRoutes: FastifyPluginAsync = async (app) => {
       const comments = await attachVotesAndReactions(data ?? [], req.userId);
       const tree = buildCommentTree(comments);
 
-      return reply.send({ ok: true, data: tree });
+      return reply.send({ ok: true, data: toCamel(tree) });
     }
   );
 
@@ -87,7 +88,7 @@ export const commentsRoutes: FastifyPluginAsync = async (app) => {
         parentId,
       });
 
-      return reply.status(201).send({ ok: true, data: comment });
+      return reply.status(201).send({ ok: true, data: toCamel(comment) });
     }
   );
 
@@ -113,7 +114,7 @@ export const commentsRoutes: FastifyPluginAsync = async (app) => {
       if (error || !data)
         return reply.status(404).send({ ok: false, error: { code: "NOT_FOUND", message: "Comment not found or not yours" } });
 
-      return reply.send({ ok: true, data });
+      return reply.send({ ok: true, data: toCamel(data) });
     }
   );
 

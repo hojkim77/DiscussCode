@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import { db } from "@discusscode/db";
+import { toCamel } from "../utils/camel.js";
 
 export const bookmarksRoutes: FastifyPluginAsync = async (app) => {
   // POST /api/bookmarks/:talkId — toggle
@@ -56,7 +57,7 @@ export const bookmarksRoutes: FastifyPluginAsync = async (app) => {
       return reply.send({
         ok: true,
         data: {
-          items: filtered,
+          items: toCamel(filtered),
           total: count ?? 0,
           page,
           pageSize,

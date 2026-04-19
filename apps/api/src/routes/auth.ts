@@ -1,6 +1,7 @@
 import type { FastifyPluginAsync } from "fastify";
 import { db } from "@discusscode/db";
 import type { Database } from "@discusscode/db";
+import { toCamel } from "../utils/camel.js";
 
 export const authRoutes: FastifyPluginAsync = async (app) => {
   // GET /api/auth/me — return current user profile (or 401)
@@ -17,7 +18,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     if (error || !data)
       return reply.status(404).send({ ok: false, error: { code: "USER_NOT_FOUND", message: "User not found" } });
 
-    return reply.send({ ok: true, data });
+    return reply.send({ ok: true, data: toCamel(data) });
   });
 
   // PATCH /api/auth/me — update own profile
@@ -59,7 +60,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     if (error)
       return reply.status(500).send({ ok: false, error: { code: "DB_ERROR", message: error.message } });
 
-    return reply.send({ ok: true, data });
+    return reply.send({ ok: true, data: toCamel(data) });
   });
 
   // GET /api/auth/notifications
@@ -87,7 +88,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
 
       return reply.send({
         ok: true,
-        data: { items: data, total: count ?? 0, page, pageSize, hasNext: (count ?? 0) > page * pageSize },
+        data: { items: toCamel(data), total: count ?? 0, page, pageSize, hasNext: (count ?? 0) > page * pageSize },
       });
     }
   );
@@ -124,7 +125,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     if (error)
       return reply.status(500).send({ ok: false, error: { code: "DB_ERROR", message: error.message } });
 
-    return reply.send({ ok: true, data });
+    return reply.send({ ok: true, data: toCamel(data) });
   });
 
   // POST /api/auth/drafts
@@ -144,7 +145,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       if (error)
         return reply.status(500).send({ ok: false, error: { code: "DB_ERROR", message: error.message } });
 
-      return reply.status(201).send({ ok: true, data });
+      return reply.status(201).send({ ok: true, data: toCamel(data) });
     }
   );
 

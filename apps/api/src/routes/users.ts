@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import { db } from "@discusscode/db";
+import { toCamel } from "../utils/camel.js";
 
 export const usersRoutes: FastifyPluginAsync = async (app) => {
   // GET /api/users/:handle — public profile
@@ -25,7 +26,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({
       ok: true,
       data: {
-        ...user,
+        ...(toCamel(user) as object),
         stats: {
           talkCount: talksRes.count ?? 0,
           commentCount: commentsRes.count ?? 0,
@@ -57,7 +58,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
 
       return reply.send({
         ok: true,
-        data: { items: data ?? [], total: count ?? 0, page, pageSize, hasNext: (count ?? 0) > page * pageSize },
+        data: { items: toCamel(data ?? []), total: count ?? 0, page, pageSize, hasNext: (count ?? 0) > page * pageSize },
       });
     }
   );

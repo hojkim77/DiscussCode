@@ -1,6 +1,7 @@
 import type { FastifyPluginAsync } from "fastify";
 import { db } from "@discusscode/db";
 import type { FollowTargetType } from "@discusscode/shared";
+import { toCamel } from "../utils/camel.js";
 
 export const followsRoutes: FastifyPluginAsync = async (app) => {
   // POST /api/follows — follow or unfollow
@@ -56,7 +57,7 @@ export const followsRoutes: FastifyPluginAsync = async (app) => {
       if (error)
         return reply.status(500).send({ ok: false, error: { code: "DB_ERROR", message: error.message } });
 
-      return reply.send({ ok: true, data });
+      return reply.send({ ok: true, data: toCamel(data) });
     }
   );
 
