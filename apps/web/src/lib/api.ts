@@ -1,6 +1,10 @@
-import type { ApiResponse, PaginatedResult, Repo, IssueItem, Talk } from "@discusscode/shared";
+import type { ApiResponse, PaginatedResult, Repo, IssueItem, Talk, TalkCategory, SortOption } from "@discusscode/shared";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "/api";
+// Server components use API_URL (direct Fastify); browser uses NEXT_PUBLIC_API_URL (proxied via Next.js)
+const API_BASE =
+  typeof window === "undefined"
+    ? `${process.env.API_URL ?? "http://localhost:4000"}/api`
+    : (process.env.NEXT_PUBLIC_API_URL ?? "/api");
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -27,10 +31,16 @@ export const api = {
       return apiFetch<PaginatedResult<IssueItem>>(`/issues${qs ? `?${qs}` : ""}`);
     },
   },
+  talks: {
+    list: (params?: { category?: TalkCategory; sort?: SortOption; page?: number; pageSize?: number }) => {
+      const qs = new URLSearchParams(params as Record<string, string>).toString();
+      return apiFetch<PaginatedResult<Talk>>(`/talks${qs ? `?${qs}` : ""}`);
+    },
+  },
   discussions: {
     list: (params?: { page?: number }) => {
       const qs = new URLSearchParams(params as Record<string, string>).toString();
-      return apiFetch<PaginatedResult<Talk>>(`/discussions${qs ? `?${qs}` : ""}`);
+      return apiFetch<PaginatedResult<Talk>>(`/talks${qs ? `?${qs}` : ""}`);
     },
     create: (body: { title: string; body: string; tags: string[] }, token: string) =>
       apiFetch<Talk>("/discussions", {
