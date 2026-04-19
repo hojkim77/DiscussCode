@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "pnpm --filter @discusscode/api... run build",
     "start": "tsx apps/api/src/server.ts",
     "lint": "turbo run lint",
     "test": "turbo run test",
