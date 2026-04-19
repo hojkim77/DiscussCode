@@ -1,5 +1,5 @@
 import { Worker } from "bullmq";
-import { redisConnection, QUEUE_NAMES, generateSummaryQueue } from "@discusscode/queue";
+import { redisConnection, QUEUE_NAMES } from "@discusscode/queue";
 import { db } from "@discusscode/db";
 import type { CollectTrendingPayload } from "@discusscode/shared";
 import { github } from "../services/github.js";
@@ -118,15 +118,6 @@ export function createCollectTrendingWorker() {
             });
           } else {
             await db.from("talks").update({ heat_score: heatScore }).eq("id", existingTalk.id);
-          }
-
-          // 7. Queue summary if needed
-          const readmeNeedsUpdate = !repo.summary_ai;
-          if (readmeNeedsUpdate) {
-            await generateSummaryQueue.add("generate-repo-summary", {
-              type: "repo",
-              itemId: repo.id,
-            });
           }
 
           // 8. Lock to prevent re-sync this cycle

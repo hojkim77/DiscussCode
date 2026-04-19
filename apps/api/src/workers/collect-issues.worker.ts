@@ -1,5 +1,5 @@
 import { Worker } from "bullmq";
-import { redisConnection, QUEUE_NAMES, generateSummaryQueue } from "@discusscode/queue";
+import { redisConnection, QUEUE_NAMES } from "@discusscode/queue";
 import { db } from "@discusscode/db";
 import type { CollectIssuesPayload } from "@discusscode/shared";
 import { github } from "../services/github.js";
@@ -99,14 +99,6 @@ export function createCollectIssuesWorker() {
               });
             } else {
               await db.from("talks").update({ heat_score: heatScore }).eq("id", existingTalk.id);
-            }
-
-            // Queue summary for new items
-            if (!upserted.summary_ai) {
-              await generateSummaryQueue.add("generate-issue-summary", {
-                type: "issue",
-                itemId: upserted.id,
-              });
             }
 
             collected++;
