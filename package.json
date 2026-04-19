@@ -6,13 +6,10 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "pnpm --filter @discusscode/api... run build",
-    "start": "tsx apps/api/src/server.ts",
+    "start": "node apps/api/dist/server.js",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck"
-  },
-  "dependencies": {
-    "tsx": "^4.19.3"
   },
   "devDependencies": {
     "turbo": "^2.5.4",
