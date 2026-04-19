@@ -1,6 +1,6 @@
 {
   "build": {
-    "cmd": "pnpm install --frozen-lockfile"
+    "cmd": "pnpm install --frozen-lockfile && pnpm --filter @discusscode/api... run build"
   },
   "start": {
     "cmd": "tsx apps/api/src/server.ts"
