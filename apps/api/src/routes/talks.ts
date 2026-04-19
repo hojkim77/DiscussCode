@@ -3,6 +3,7 @@ import { db } from "@discusscode/db";
 import type { Database } from "@discusscode/db";
 import type { TalkCategory, SortOption, TimePeriod } from "@discusscode/shared";
 import { cache } from "../services/cache.js";
+import { toCamel } from "../utils/camel.js";
 
 type ListQuery = {
   category?: TalkCategory;
@@ -274,13 +275,10 @@ export const talksRoutes: FastifyPluginAsync = async (app) => {
 async function enrichTalks(talks: unknown[], userId: string | null) {
   if (!talks.length) return [];
 
-  const repoRefIds = (talks as Array<{ category: string; ref_id: string | null }>)
-    .filter((t) => t.category === "REPO" && t.ref_id)
-    .map((t) => t.ref_id!);
+  const rows = talks as Array<Record<string, unknown>>;
 
-  const issueRefIds = (talks as Array<{ category: string; ref_id: string | null }>)
-    .filter((t) => t.category === "ISSUE" && t.ref_id)
-    .map((t) => t.ref_id!);
+  const repoRefIds = rows.filter((t) => t.category === "REPO" && t.ref_id).map((t) => t.ref_id as string);
+  const issueRefIds = rows.filter((t) => t.category === "ISSUE" && t.ref_id).map((t) => t.ref_id as string);
 
   const [reposResult, issuesResult] = await Promise.all([
     repoRefIds.length
@@ -294,12 +292,11 @@ async function enrichTalks(talks: unknown[], userId: string | null) {
   const repoMap = new Map((reposResult.data ?? []).map((r) => [r.id, r]));
   const issueMap = new Map((issuesResult.data ?? []).map((i) => [i.id, i]));
 
-  // User's votes
   let voteMap = new Map<string, number>();
   let bookmarkSet = new Set<string>();
 
   if (userId) {
-    const talkIds = (talks as Array<{ id: string }>).map((t) => t.id);
+    const talkIds = rows.map((t) => t.id as string);
     const [votesResult, bookmarksResult] = await Promise.all([
       db.from("votes").select("target_id, value").eq("target_type", "talk").eq("user_id", userId).in("target_id", talkIds),
       db.from("bookmarks").select("talk_id").eq("user_id", userId).in("talk_id", talkIds),
@@ -308,10 +305,10 @@ async function enrichTalks(talks: unknown[], userId: string | null) {
     bookmarkSet = new Set((bookmarksResult.data ?? []).map((b) => b.talk_id));
   }
 
-  return (talks as Array<Record<string, unknown>>).map((t) => ({
-    ...t,
-    repo: t.category === "REPO" && t.ref_id ? repoMap.get(t.ref_id as string) : undefined,
-    issue: t.category === "ISSUE" && t.ref_id ? issueMap.get(t.ref_id as string) : undefined,
+  return rows.map((t) => ({
+    ...(toCamel(t) as object),
+    repo: t.category === "REPO" && t.ref_id ? toCamel(repoMap.get(t.ref_id as string)) : undefined,
+    issue: t.category === "ISSUE" && t.ref_id ? toCamel(issueMap.get(t.ref_id as string)) : undefined,
     userVote: voteMap.get(t.id as string) ?? null,
     isBookmarked: bookmarkSet.has(t.id as string),
   }));

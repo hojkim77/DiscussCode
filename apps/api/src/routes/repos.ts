@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import { db } from "@discusscode/db";
+import { toCamel } from "../utils/camel.js";
 
 export const reposRoutes: FastifyPluginAsync = async (app) => {
   // GET /api/repos — list repos (with optional language filter)
@@ -23,7 +24,7 @@ export const reposRoutes: FastifyPluginAsync = async (app) => {
 
       return reply.send({
         ok: true,
-        data: { items: data, total: count ?? 0, page, pageSize, hasNext: (count ?? 0) > page * pageSize },
+        data: { items: toCamel(data), total: count ?? 0, page, pageSize, hasNext: (count ?? 0) > page * pageSize },
       });
     }
   );
@@ -47,6 +48,6 @@ export const reposRoutes: FastifyPluginAsync = async (app) => {
       .order("recorded_at", { ascending: false })
       .limit(168); // last 7 days @ 1h intervals
 
-    return reply.send({ ok: true, data: { ...data, snapshots: snapshots ?? [] } });
+    return reply.send({ ok: true, data: toCamel({ ...data, snapshots: snapshots ?? [] }) });
   });
 };

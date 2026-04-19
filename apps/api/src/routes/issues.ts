@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import { db } from "@discusscode/db";
+import { toCamel } from "../utils/camel.js";
 
 export const issueRoutes: FastifyPluginAsync = async (app) => {
   app.get<{
@@ -29,7 +30,7 @@ export const issueRoutes: FastifyPluginAsync = async (app) => {
 
     return reply.send({
       ok: true,
-      data: { items: data, total: count ?? 0, page, pageSize, hasNext: (count ?? 0) > page * pageSize },
+      data: { items: toCamel(data), total: count ?? 0, page, pageSize, hasNext: (count ?? 0) > page * pageSize },
     });
   });
 
@@ -43,6 +44,6 @@ export const issueRoutes: FastifyPluginAsync = async (app) => {
     if (error || !data)
       return reply.status(404).send({ ok: false, error: { code: "NOT_FOUND", message: "Issue not found" } });
 
-    return reply.send({ ok: true, data });
+    return reply.send({ ok: true, data: toCamel(data) });
   });
 };

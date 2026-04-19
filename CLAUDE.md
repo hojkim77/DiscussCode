@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Feature Specs
+Full specs in `docs/features/` — read the relevant file when working on a feature.
+Index + MVP scope checklist: [`docs/features/README.md`](docs/features/README.md)
+
 ## Commands
 
 ```bash
