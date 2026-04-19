@@ -1,8 +1,8 @@
 {
   "build": {
-    "cmd": "pnpm install --frozen-lockfile && pnpm turbo run build"
+    "cmd": "pnpm install --frozen-lockfile"
   },
   "start": {
-    "cmd": "node apps/api/dist/server.js"
+    "cmd": "tsx apps/api/src/server.ts"
   }
 }
