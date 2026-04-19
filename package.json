@@ -5,7 +5,8 @@
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "pnpm --filter @discusscode/api build",
+    "start": "node apps/api/dist/server.js",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck"
