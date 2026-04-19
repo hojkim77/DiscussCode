@@ -1,4 +1,4 @@
-import type { ApiResponse, PaginatedResult, TrendingItem, Issue, Discussion } from "@discusscode/shared";
+import type { ApiResponse, PaginatedResult, Repo, IssueItem, Talk } from "@discusscode/shared";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "/api";
 
@@ -17,23 +17,23 @@ export const api = {
   trending: {
     list: (params?: { page?: number; source?: string }) => {
       const qs = new URLSearchParams(params as Record<string, string>).toString();
-      return apiFetch<PaginatedResult<TrendingItem>>(`/trending${qs ? `?${qs}` : ""}`);
+      return apiFetch<PaginatedResult<Repo>>(`/trending${qs ? `?${qs}` : ""}`);
     },
-    get: (id: string) => apiFetch<TrendingItem>(`/trending/${id}`),
+    get: (id: string) => apiFetch<Repo>(`/trending/${id}`),
   },
   issues: {
     list: (params?: { page?: number; repo?: string; state?: string }) => {
       const qs = new URLSearchParams(params as Record<string, string>).toString();
-      return apiFetch<PaginatedResult<Issue>>(`/issues${qs ? `?${qs}` : ""}`);
+      return apiFetch<PaginatedResult<IssueItem>>(`/issues${qs ? `?${qs}` : ""}`);
     },
   },
   discussions: {
     list: (params?: { page?: number }) => {
       const qs = new URLSearchParams(params as Record<string, string>).toString();
-      return apiFetch<PaginatedResult<Discussion>>(`/discussions${qs ? `?${qs}` : ""}`);
+      return apiFetch<PaginatedResult<Talk>>(`/discussions${qs ? `?${qs}` : ""}`);
     },
     create: (body: { title: string; body: string; tags: string[] }, token: string) =>
-      apiFetch<Discussion>("/discussions", {
+      apiFetch<Talk>("/discussions", {
         method: "POST",
         body: JSON.stringify(body),
         headers: { Authorization: `Bearer ${token}` },
