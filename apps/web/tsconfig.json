@@ -17,9 +17,8 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"],
+      "@discusscode/shared": ["../../packages/shared/src/index.ts"]
     },
     "allowJs": true,
     "noEmit": true,

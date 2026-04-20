@@ -9,6 +9,10 @@ dist/
 .env.test.local
 .env.production.local
 *.tsbuildinfo
+packages/*/src/*.js
+packages/*/src/*.js.map
+packages/*/src/*.d.ts
+packages/*/src/*.d.ts.map
 dump.rdb
 .env.develop
 .env.prodction

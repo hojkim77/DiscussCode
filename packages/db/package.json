@@ -9,7 +9,6 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc",
     "typecheck": "tsc --noEmit",
     "generate": "supabase gen types typescript --local > src/database.types.ts"
   },
