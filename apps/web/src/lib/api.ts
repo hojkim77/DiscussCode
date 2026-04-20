@@ -1,13 +1,13 @@
 import type { ApiResponse, PaginatedResult, Repo, IssueItem, Talk, TalkCategory, SortOption } from "@discusscode/shared";
 
-// Server components use API_URL (direct Fastify); browser uses NEXT_PUBLIC_API_URL (proxied via Next.js)
-const API_BASE =
-  typeof window === "undefined"
-    ? `${process.env.API_URL ?? "http://localhost:4000"}/api`
-    : (process.env.NEXT_PUBLIC_API_URL ?? "/api");
-
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+  // Evaluated at request time so runtime env vars (Vercel) are always read fresh
+  const apiBase =
+    typeof window === "undefined"
+      ? `${process.env.API_URL ?? "http://localhost:4000"}/api`
+      : (process.env.NEXT_PUBLIC_API_URL ?? "/api");
+
+  const res = await fetch(`${apiBase}${path}`, {
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
   });
