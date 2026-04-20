@@ -1,6 +1,5 @@
 import { api } from "@/lib/api";
 
-export const dynamic = "force-dynamic";
 import { TalkCard, TalkCardProps } from "@/components/ui/talk-card";
 import { DiscussionItem, DiscussionItemProps } from "@/components/ui/discussion-item";
 import type { Talk } from "@discusscode/shared";
@@ -45,13 +44,10 @@ function toDiscussionItem(talk: Talk): DiscussionItemProps {
 
 export default async function Home() {
   const [repoResult, issueResult, openResult] = await Promise.allSettled([
-    api.talks.list({ category: "REPO", sort: "hot", pageSize: 2 }),
-    api.talks.list({ category: "ISSUE", sort: "hot", pageSize: 2 }),
-    api.talks.list({ category: "OPEN", sort: "hot", pageSize: 3 }),
+    api.talks.list({ category: "REPO", sort: "hot", pageSize: 4 }, { next: { revalidate: 3600 } }),
+    api.talks.list({ category: "ISSUE", sort: "hot", pageSize: 4 }, { next: { revalidate: 3600 } }),
+    api.talks.list({ category: "OPEN", sort: "hot", pageSize: 3 }, { next: { revalidate: 60 } }),
   ]);
-
-  const apiError =
-    repoResult.status === "rejected" ? String(repoResult.reason) : null;
 
   const repoTalks: TalkCardProps[] =
     repoResult.status === "fulfilled" ? repoResult.value.items.map(toRepoCard) : [];
@@ -59,17 +55,9 @@ export default async function Home() {
     issueResult.status === "fulfilled" ? issueResult.value.items.map(toIssueCard) : [];
   const openDiscussions: DiscussionItemProps[] =
     openResult.status === "fulfilled" ? openResult.value.items.map(toDiscussionItem) : [];
-  console.log(apiError);
-  console.log(repoResult);
-  console.log(issueResult);
-  console.log(openResult);
+
   return (
     <>
-      {apiError && (
-        <pre className="bg-red-900 text-white text-xs p-4 mb-6 rounded overflow-auto">
-          {`API_URL: ${process.env.API_URL ?? "(not set)"}\nError: ${apiError}`}
-        </pre>
-      )}
       <section className="mb-20 max-w-4xl">
         <h1 className="text-[3.5rem] font-extrabold tracking-tight text-on-surface leading-tight mb-6">
           코드를 넘어선

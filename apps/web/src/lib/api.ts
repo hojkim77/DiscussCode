@@ -1,17 +1,14 @@
 import type { ApiResponse, PaginatedResult, Repo, IssueItem, Talk, TalkCategory, SortOption } from "@discusscode/shared";
 
-async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  // Evaluated at request time so runtime env vars (Vercel) are always read fresh
+async function apiFetch<T>(path: string, init?: RequestInit & { next?: NextFetchRequestConfig }): Promise<T> {
   const apiBase =
     typeof window === "undefined"
       ? `${process.env.API_URL ?? "http://localhost:4000"}/api`
       : (process.env.NEXT_PUBLIC_API_URL ?? "/api");
-  console.log(apiBase);
   const res = await fetch(`${apiBase}${path}`, {
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
   });
-  console.log(res);
   const json = (await res.json()) as ApiResponse<T>;
   if (!json.ok) throw new Error(json.error.message);
   return json.data;
@@ -32,9 +29,9 @@ export const api = {
     },
   },
   talks: {
-    list: (params?: { category?: TalkCategory; sort?: SortOption; page?: number; pageSize?: number }) => {
+    list: (params?: { category?: TalkCategory; sort?: SortOption; page?: number; pageSize?: number }, fetchInit?: { next?: NextFetchRequestConfig }) => {
       const qs = new URLSearchParams(params as Record<string, string>).toString();
-      return apiFetch<PaginatedResult<Talk>>(`/talks${qs ? `?${qs}` : ""}`);
+      return apiFetch<PaginatedResult<Talk>>(`/talks${qs ? `?${qs}` : ""}`, fetchInit);
     },
   },
   discussions: {
