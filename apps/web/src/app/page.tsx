@@ -48,6 +48,9 @@ export default async function Home() {
     api.talks.list({ category: "OPEN", sort: "hot", pageSize: 3 }),
   ]);
 
+  const apiError =
+    repoResult.status === "rejected" ? String(repoResult.reason) : null;
+
   const repoTalks: TalkCardProps[] =
     repoResult.status === "fulfilled" ? repoResult.value.items.map(toRepoCard) : [];
   const issueTalks: TalkCardProps[] =
@@ -57,6 +60,11 @@ export default async function Home() {
 
   return (
     <>
+      {apiError && (
+        <pre className="bg-red-900 text-white text-xs p-4 mb-6 rounded overflow-auto">
+          {`API_URL: ${process.env.API_URL ?? "(not set)"}\nError: ${apiError}`}
+        </pre>
+      )}
       <section className="mb-20 max-w-4xl">
         <h1 className="text-[3.5rem] font-extrabold tracking-tight text-on-surface leading-tight mb-6">
           코드를 넘어선
