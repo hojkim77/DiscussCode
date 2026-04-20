@@ -6,12 +6,12 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     typeof window === "undefined"
       ? `${process.env.API_URL ?? "http://localhost:4000"}/api`
       : (process.env.NEXT_PUBLIC_API_URL ?? "/api");
-
+  console.log(apiBase);
   const res = await fetch(`${apiBase}${path}`, {
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
   });
-
+  console.log(res);
   const json = (await res.json()) as ApiResponse<T>;
   if (!json.ok) throw new Error(json.error.message);
   return json.data;

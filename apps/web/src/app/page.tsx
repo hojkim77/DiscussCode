@@ -1,4 +1,6 @@
 import { api } from "@/lib/api";
+
+export const dynamic = "force-dynamic";
 import { TalkCard, TalkCardProps } from "@/components/ui/talk-card";
 import { DiscussionItem, DiscussionItemProps } from "@/components/ui/discussion-item";
 import type { Talk } from "@discusscode/shared";
@@ -57,7 +59,10 @@ export default async function Home() {
     issueResult.status === "fulfilled" ? issueResult.value.items.map(toIssueCard) : [];
   const openDiscussions: DiscussionItemProps[] =
     openResult.status === "fulfilled" ? openResult.value.items.map(toDiscussionItem) : [];
-
+  console.log(apiError);
+  console.log(repoResult);
+  console.log(issueResult);
+  console.log(openResult);
   return (
     <>
       {apiError && (
